@@ -77,8 +77,13 @@ def generar():
 @app.route("/portal")
 def portal():
     lema = (request.args.get("lema") or "Seguridad y Salud, lo importante eres tú")[:LEMA_MAX]
-    return render_template("portal.html", lema=lema, menu=MENU,
-                           hay_video=hay_video(), video_nombre=VIDEO_NOMBRE)
+    return render_template(
+        "portal.html",
+        lema=lema,
+        menu=MENU,
+        hay_video=hay_video(),
+        video_nombre=VIDEO_NOMBRE,
+    )
 
 
 @app.errorhandler(413)
@@ -100,23 +105,41 @@ def _servidor():
     app.run(debug=False, host=HOST, port=PUERTO, use_reloader=False)
 
 
+def _abrir_navegador():
+    try:
+        webbrowser.open(URL)
+    except Exception:
+        pass
+
+
 def main():
     """Abre la interfaz del portal (no el codigo)."""
+    webview = None
     try:
         import webview  # pywebview
-    except ImportError:
+    except Exception:
         webview = None
 
-    if webview:
-        # Servidor en segundo plano + ventana de escritorio con la interfaz
-        threading.Thread(target=_servidor, daemon=True).start()
-        webview.create_window("Portal SST - Lema de Seguridad", URL,
-                              width=1280, height=820, min_size=(900, 600))
-        webview.start()          # al cerrar la ventana, termina el programa
-    else:
-        # Respaldo: abre la interfaz en el navegador predeterminado
-        threading.Timer(1.2, lambda: webbrowser.open(URL)).start()
-        _servidor()
+    if webview is not None:
+        try:
+            # Servidor en segundo plano + ventana de escritorio con la interfaz
+            threading.Thread(target=_servidor, daemon=True).start()
+            webview.create_window(
+                "Portal SST - Lema de Seguridad",
+                URL,
+                width=1280,
+                height=820,
+                min_size=(900, 600),
+            )
+            webview.start()  # al cerrar la ventana, termina el programa
+            return
+        except Exception:
+            # Si no hay entorno gráfico disponible, se usa el navegador del sistema.
+            pass
+
+    # Respaldo: abre la interfaz en el navegador predeterminado.
+    threading.Timer(1.2, _abrir_navegador).start()
+    _servidor()
 
 
 if __name__ == "__main__":
