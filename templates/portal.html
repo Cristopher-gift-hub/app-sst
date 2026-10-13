@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block titulo %}{{ lema }} · Portal SST{% endblock %}
+{% block contenido %}
+<div class="layout">
+  <nav class="menu">
+    {% for item in menu %}
+      <a href="#{{ item.id }}" data-seccion="{{ item.id }}" class="{{ 'activo' if loop.first }}">
+        <span>{{ item.icono }}</span>{{ item.titulo }}
+      </a>
+    {% endfor %}
+    <a class="volver" href="{{ url_for('inicio') }}">✏️ Cambiar lema</a>
+  </nav>
+
+  <main class="principal">
+    <section class="lema">
+      <div>
+        <small>Lema de seguridad</small>
+        <h1>“{{ lema }}”</h1>
+      </div>
+      <img class="foto" src="{{ url_for('static', filename='img/foto_portada.png') }}" alt="Foto de portada">
+    </section>
+
+    <section id="inicio" class="seccion visible">
+      <div class="bloque">
+        <h2>Video</h2>
+        {% if hay_video %}
+          <!-- autoplay + muted: los navegadores solo permiten autoplay sin sonido -->
+          <video src="{{ url_for('static', filename='video/' ~ video_nombre) }}"
+                 autoplay muted loop playsinline controls></video>
+        {% else %}
+          <div class="sin-video">No hay video cargado. Súbelo desde “Cambiar lema”.</div>
+        {% endif %}
+      </div>
+    </section>
+
+    {% for item in menu[1:] %}
+    <section id="{{ item.id }}" class="seccion">
+      <div class="bloque">
+        <h2>{{ item.icono }} {{ item.titulo }}</h2>
+        <p>Sección en construcción.</p>
+      </div>
+    </section>
+    {% endfor %}
+  </main>
+</div>
+
+<script>
+  // Navegación del menú: muestra una sección a la vez
+  const enlaces = document.querySelectorAll('.menu a[data-seccion]');
+  function mostrar(id){
+    document.querySelectorAll('.seccion').forEach(s => s.classList.toggle('visible', s.id === id));
+    enlaces.forEach(a => a.classList.toggle('activo', a.dataset.seccion === id));
+  }
+  enlaces.forEach(a => a.addEventListener('click', e => { e.preventDefault(); mostrar(a.dataset.seccion); }));
+  if (location.hash) mostrar(location.hash.slice(1));
+</script>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block titulo %}Generar portal SST{% endblock %}
+{% block contenido %}
+<main class="contenedor-form">
+  <div class="tarjeta">
+    <h1>Lema de seguridad</h1>
+    <p class="ayuda">Escribe el lema y genera el portal con menú, foto y video.</p>
+
+    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+
+    <form action="{{ url_for('generar') }}" method="post" enctype="multipart/form-data">
+      <label for="lema">Lema</label>
+      <input type="text" id="lema" name="lema" maxlength="{{ lema_max }}" required
+             placeholder="Seguridad y Salud, lo importante eres tú" value="{{ lema or '' }}">
+
+      <label for="video">Video (.mp4) — opcional</label>
+      <input type="file" id="video" name="video" accept="video/mp4">
+      <p class="nota">
+        {% if hay_video %}Ya hay un video cargado; si subes otro, lo reemplaza.
+        {% else %}Aún no hay video cargado.{% endif %}
+      </p>
+
+      <button class="boton" type="submit">Generar portal</button>
+    </form>
+  </div>
+</main>
+{% endblock %}

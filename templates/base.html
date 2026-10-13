@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Portal SST{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+<body>
+  <header class="cabecera">
+    <div class="escudo">SST</div>
+    <div class="institucion">
+      <small>UNMSM · Facultad de Ingeniería Industrial</small>
+      <strong>Escuela Profesional de Seguridad y Salud en el Trabajo</strong>
+    </div>
+  </header>
+  {% block contenido %}{% endblock %}
+</body>
+</html>
