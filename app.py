@@ -48,16 +48,28 @@ def inicio():
 def generar():
     lema = (request.form.get("lema") or "").strip()[:LEMA_MAX]
     if not lema:
-        return render_template("index.html", hay_video=hay_video(),
-                               lema_max=LEMA_MAX, error="Escribe un lema de seguridad.")
+        return render_template(
+            "index.html",
+            hay_video=hay_video(),
+            lema_max=LEMA_MAX,
+            error="Escribe un lema de seguridad.",
+            lema="",
+        )
 
     archivo = request.files.get("video")
     if archivo and archivo.filename:
-        if not archivo.filename.lower().endswith(".mp4"):
-            return render_template("index.html", hay_video=hay_video(), lema_max=LEMA_MAX,
-                                   error="El video debe ser un archivo .mp4", lema=lema)
+        nombre = archivo.filename.lower()
+        if not nombre.endswith(".mp4"):
+            return render_template(
+                "index.html",
+                hay_video=hay_video(),
+                lema_max=LEMA_MAX,
+                error="El video debe ser un archivo .mp4",
+                lema=lema,
+            )
+
         VIDEO_DIR.mkdir(parents=True, exist_ok=True)
-        archivo.save(VIDEO_DIR / VIDEO_NOMBRE)   # reemplaza el video anterior
+        archivo.save(VIDEO_DIR / VIDEO_NOMBRE)  # reemplaza el video anterior
 
     return redirect(url_for("portal", lema=lema))
 
@@ -71,8 +83,13 @@ def portal():
 
 @app.errorhandler(413)
 def demasiado_grande(_e):
-    return render_template("index.html", hay_video=hay_video(), lema_max=LEMA_MAX,
-                           error="El video supera los 300 MB."), 413
+    return render_template(
+        "index.html",
+        hay_video=hay_video(),
+        lema_max=LEMA_MAX,
+        error="El video supera los 300 MB.",
+        lema="",
+    ), 413
 
 
 HOST, PUERTO = "127.0.0.1", 5000
